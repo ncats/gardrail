@@ -103,9 +103,11 @@ class DiseasePhenotypeAssociationAdmin(SimpleHistoryAdmin):
     show_evidence.short_description = 'Evidence'
 
     def show_frequency(self, obj):
-        if obj.frequency.value is not None:
-            return obj.frequency.get_value()
-        return obj.frequency.other
+        if obj.frequency:
+            if obj.frequency.value is not None:
+                return obj.frequency.get_value()
+            return obj.frequency.other
+        return None
     show_frequency.short_description = 'Frequency'
 
     def show_aspect(self, obj):
