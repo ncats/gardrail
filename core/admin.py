@@ -20,7 +20,7 @@ class SynonymAdmin(admin.ModelAdmin):
         html = '<ul>'
         for t in terms:
             url = link('term', 'cui', t.cui)
-            html = html +'<li><a href="%s">%s</a></li>' % (url, t.cui)
+            html = html +'<li><a href="%s">%s (%s)</a></li>' % (url, t.label, t.cui)
         html = html + '</ul>'
         return format_html(html)
     show_terms.short_description = 'Terms'
@@ -29,7 +29,7 @@ class SynonymAdmin(admin.ModelAdmin):
 class PrevalenceAdmin(admin.ModelAdmin):
     list_display = ('show_type', 'show_qualification',
                     'show_class', 'geo', 'show_status',
-                    'show_disease'
+                    'show_diseases'
     )
 
     def show_type(self, obj):
@@ -48,14 +48,15 @@ class PrevalenceAdmin(admin.ModelAdmin):
         return obj.get_status()
     show_status.short_description = 'Status'
 
-    def show_disease(self, obj):
+    def show_diseases(self, obj):
         diseases = Disease.objects.filter(epidemiology=obj)
-        html = ''
+        html = '<ul>'
         for d in diseases:
             url = link('disease', 'cui', d.cui)
-            html = html + '<a href="%s">'% url + d.label+'</a>'
+            html = html + '<li><a href="%s">'% url + d.label+' ('+d.cui+')</a></li>'
+        html = html + '</ul>'
         return format_html(html)
-    show_disease.short_description = 'Disease'
+    show_diseases.short_description = 'Diseases'
 
 @admin.register(DiseaseGeneAssociation)
 class DiseaseGeneAssociationAdmin(SimpleHistoryAdmin):
@@ -177,7 +178,8 @@ class DiseaseRelationshipAdmin(TermAdmin):
         diseases = '%d disease(s)<ul>' % len(assocs)
         for ass in assocs[:min(len(assocs), 5)]:
             url = link('disease', 'cui', ass.disease.cui)
-            diseases = diseases + '<li><a href="%s">'%url +ass.disease.label+'</a></li>'
+            diseases = (diseases + '<li><a href="%s">'%url
+                        +'%s (%s)</a></li>' % (ass.disease.label, ass.disease.cui))
         diseases = diseases + '</ul>'
         return format_html(diseases)
     
