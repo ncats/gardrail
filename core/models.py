@@ -1,5 +1,6 @@
 import uuid
 from django.db import models
+from django.contrib.auth.models import User
 from django.db.models.constraints import Q
 from simple_history.models import HistoricalRecords
 from model_utils.managers import InheritanceManager
@@ -34,6 +35,15 @@ class Term(models.Model):
     def __str__(self):
         return '%s{%s, %s}' % (type(self).__name__, self.cui, self.label)
 
+class Phenotype(Term):
+    history = HistoricalRecords()
+
+class Inheritance(Term):
+    history = HistoricalRecords()
+
+class Reference(Term):
+    history = HistoricalRecords()
+    
 class Relationship(models.Model):
     STATUS = (
         ('U', 'Unknown'),
@@ -45,7 +55,7 @@ class Relationship(models.Model):
     status = models.CharField('Relationship status', max_length=1,
                               default='U', choices=STATUS)
     comments = models.TextField(null=True, blank=True)
-    references = models.ManyToManyField(Term, blank=True)
+    references = models.ManyToManyField(Reference, blank=True)
 
     class Meta:
         abstract = True
@@ -59,9 +69,6 @@ class Gene(Term):
     def __str__(self):
         return '%s{%s, %s, %s}' % (type(self).__name__, self.cui,
                                    self.symbol, self.label)
-
-class Phenotype(Term):
-    history = HistoricalRecords()
 
 class Prevalence(models.Model):
     PTYPE = (
@@ -120,6 +127,8 @@ class Prevalence(models.Model):
         return get_tuple(Prevalence.PSTATUS, self.status)
 
 class Disease(Term):
+    inheritance = models.ManyToManyField(
+        Inheritance, related_name='disease_inheritance', blank=True)
     gene_associations = models.ManyToManyField(
         Gene,
         through='DiseaseGeneAssociation',
@@ -152,7 +161,11 @@ class DiseaseGeneAssociation(Relationship):
     disease = models.ForeignKey(Disease, on_delete=models.CASCADE)
     gene = models.ForeignKey(Gene, on_delete=models.CASCADE)
     assoc_type = models.CharField(max_length=32, choices=TYPES)
-    references = models.ManyToManyField(Term, blank=True, related_name='gene_assoc_ref')    
+    references = models.ManyToManyField(Reference, blank=True, related_name='gene_assoc_ref')
+    modified_by = models.ForeignKey(User, null=True, related_name='disase_gene_modified_user',
+                                    on_delete=models.SET_NULL)
+    created_by = models.ForeignKey(User, null=True, related_name='disease_gene_created_user',
+                                   on_delete=models.SET_NULL)    
     history = HistoricalRecords()
 
     class Meta:
@@ -240,8 +253,14 @@ class DiseasePhenotypeAssociation(Relationship):
                                  related_name='modifier_term',
                                  on_delete=models.CASCADE)
     aspect = models.CharField(max_length=1, default='P', choices=ASPECT)
-    references = models.ManyToManyField(Term, blank=True,
-                                        related_name='phenotype_assoc_ref')    
+    references = models.ManyToManyField(Reference, blank=True,
+                                        related_name='phenotype_assoc_ref')
+    modified_by = models.ForeignKey(User, null=True,
+                                    related_name='disease_phenotype_modified_user',
+                                    on_delete=models.SET_NULL)
+    created_by = models.ForeignKey(User, null=True,
+                                   related_name='disease_phenotype_created_user',
+                                   on_delete=models.SET_NULL)
     history = HistoricalRecords()
 
     class Meta:

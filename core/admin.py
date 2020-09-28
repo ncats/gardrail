@@ -134,8 +134,19 @@ class TermAdmin(SimpleHistoryAdmin):
     
 @admin.register(Disease)
 class DiseaseAdmin(TermAdmin):
-    list_display = ('cui', 'label_display', 'show_genes', 'show_phenotypes', 'show_epidemiology')
+    list_display = ('cui', 'label_display', 'show_genes', 'show_inheritance',
+                    'show_phenotypes', 'show_epidemiology')
 
+    def show_inheritance(self, obj):
+        inher = Inheritance.objects.filter(disease_inheritance=obj)
+        html = '<ul>'
+        for inh in inher:
+            url = link('inheritance', 'cui', inh.cui)
+            html = html + '<li><a href="%s">'%url + '%s (%s)</a></li>' % (inh.label, inh.cui)
+        html = html + '</ul>'
+        return format_html(html)
+    show_inheritance.short_description = 'Inheritance'
+        
     def show_genes(self, obj):
         assocs = DiseaseGeneAssociation.objects.filter(disease=obj)
         genes = '<ul>'
@@ -196,3 +207,11 @@ class PhenotypeAdmin(DiseaseRelationshipAdmin):
         assocs = DiseasePhenotypeAssociation.objects.filter(phenotype=obj)
         return super().show_diseases(assocs)
     show_diseases.short_description = 'Diseases'
+
+@admin.register(Inheritance)
+class InheritanceAdmin(TermAdmin):
+    pass
+
+@admin.register(Reference)
+class ReferenceAdmin(TermAdmin):
+    pass
