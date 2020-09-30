@@ -24,8 +24,10 @@ class Term(models.Model):
     cui = models.CharField('CURIE', max_length=32, unique=True)
     label = models.CharField(max_length=1024, null=False)
     synonyms = models.ManyToManyField(
-        Synonym, 
-        blank=True)    
+        Synonym,
+        related_name='terms',
+        blank=True
+    )
     url = models.URLField(max_length=256, blank=True)
     description = models.TextField(null=True, blank=True)
     history = HistoricalRecords()
@@ -128,7 +130,7 @@ class Prevalence(models.Model):
 
 class Disease(Term):
     inheritance = models.ManyToManyField(
-        Inheritance, related_name='disease_inheritance', blank=True)
+        Inheritance, related_name='diseases', blank=True)
     gene_associations = models.ManyToManyField(
         Gene,
         through='DiseaseGeneAssociation',
