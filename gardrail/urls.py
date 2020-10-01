@@ -31,7 +31,9 @@ router.register(r'inheritances', views.InheritanceViewSet)
 router.register(r'genes', views.GeneViewSet)
 router.register(r'diseases', views.DiseaseViewSet)
 router.register(r'terms', views.TermViewSet)
+router.register(r'phenotypes', views.PhenotypeViewSet)
 router.register(r'disease_gene_associations', views.DiseaseGeneAssociationViewSet)
+router.register(r'disease_phenotype_associations', views.DiseasePhenotypeAssociationViewSet)
 
 v1patterns = [
     path('', include(router.urls)),

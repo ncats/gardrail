@@ -21,6 +21,10 @@ class ReferenceViewSet(ModelViewSet):
     queryset = Reference.objects.all()
     serializer_class = ReferenceSerializer
 
+class PhenotypeViewSet(ModelViewSet):
+    queryset = Phenotype.objects.all()
+    serializer_class = PhenotypeSerializer
+
 class GeneViewSet(ModelViewSet):
     queryset = Gene.objects.all()
     serializer_class = GeneSerializer
@@ -33,3 +37,6 @@ class DiseaseGeneAssociationViewSet(ModelViewSet):
     queryset = DiseaseGeneAssociation.objects.all()
     serializer_class = DiseaseGeneAssociationSerializer
     
+class DiseasePhenotypeAssociationViewSet(ModelViewSet):
+    queryset = DiseasePhenotypeAssociation.objects.all()
+    serializer_class = DiseasePhenotypeAssociationSerializer

@@ -164,14 +164,19 @@ class DiseaseGeneAssociation(Relationship):
     )
     name = models.CharField(max_length=64, null=False,
                             default='DiseaseGeneAssociation')
-    disease = models.ForeignKey(Disease, on_delete=models.CASCADE)
-    gene = models.ForeignKey(Gene, on_delete=models.CASCADE)
+    disease = models.ForeignKey(
+        Disease, related_name='genes', on_delete=models.CASCADE)
+    gene = models.ForeignKey(
+        Gene, related_name='diseases', on_delete=models.CASCADE)
     assoc_type = models.CharField(max_length=32, choices=TYPES)
-    references = models.ManyToManyField(Reference, blank=True, related_name='gene_assoc_ref')
-    modified_by = models.ForeignKey(User, null=True, related_name='disase_gene_modified_user',
-                                    on_delete=models.SET_NULL)
-    created_by = models.ForeignKey(User, null=True, related_name='disease_gene_created_user',
-                                   on_delete=models.SET_NULL)    
+    references = models.ManyToManyField(
+        Reference, blank=True, related_name='gene_assoc_ref')
+    modified_by = models.ForeignKey(
+        User, null=True, related_name='disase_gene_modified_user',
+        on_delete=models.SET_NULL)
+    created_by = models.ForeignKey(
+        User, null=True, related_name='disease_gene_created_user',
+        on_delete=models.SET_NULL)    
     history = HistoricalRecords()
 
     class Meta:
@@ -248,8 +253,10 @@ class DiseasePhenotypeAssociation(Relationship):
     )
     name = models.CharField(max_length=64, null=False,
                             default='DiseasePhenotypeAssociation')
-    disease = models.ForeignKey(Disease, on_delete=models.CASCADE)
-    phenotype = models.ForeignKey(Phenotype, on_delete=models.CASCADE)
+    disease = models.ForeignKey(
+        Disease, related_name='phenotypes', on_delete=models.CASCADE)
+    phenotype = models.ForeignKey(
+        Phenotype, related_name='diseases', on_delete=models.CASCADE)
     evidence = models.CharField(max_length=12, default='', choices=EVIDENCE)
     frequency = models.ForeignKey(Frequency, null=True, blank=True,
                                   on_delete=models.CASCADE)
