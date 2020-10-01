@@ -59,8 +59,12 @@ class Relationship(models.Model):
     comments = models.TextField(null=True, blank=True)
     references = models.ManyToManyField(Reference, blank=True)
 
+    def get_status(self):
+        return get_tuple(Relationship.STATUS, self.status)
+    
     class Meta:
         abstract = True
+
 
 class Gene(Term):
     symbol = models.CharField('Gene symbol', max_length=16, null=False)

@@ -17,6 +17,10 @@ class TermViewSet(ModelViewSet):
     queryset = Term.objects.all()
     serializer_class = TermSerializer
 
+class ReferenceViewSet(ModelViewSet):
+    queryset = Reference.objects.all()
+    serializer_class = ReferenceSerializer
+
 class GeneViewSet(ModelViewSet):
     queryset = Gene.objects.all()
     serializer_class = GeneSerializer
